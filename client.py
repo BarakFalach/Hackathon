@@ -9,13 +9,15 @@ import time
 def start_clicking(s):
     # readable, writable, exceptional = select.select(inputs, outputs, inputs)
     print("start clicking!!!")
-    dead_line = time.time() + 10
+    dead_line = time.time() + 5
     t = 0 
     while t < dead_line:
         pressedKey = msvcrt.getch()
         s.sendall(pressedKey)
         t = time.time()
-    print("stop!!!")    
+    print('stop clicking!')
+    data = s.recv(1024).decode('utf-8')
+    print(repr(data))    
 
 def establish_TCP(host_ip, port_to_connect,client_name):
 

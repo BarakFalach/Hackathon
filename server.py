@@ -16,4 +16,4 @@ message = struct.pack("Ibh",1000,0x2,5000)
 while True:
     server.sendto(message, ('<broadcast>', 3000))
     print("message sent!")
-    time.sleep(1)
+    time.sleep(10)

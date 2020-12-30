@@ -9,24 +9,39 @@ from Player import Player
 gameOn = False
 
 def endGame (game_teams):
-    game_teams = sorted(game_teams,key=lambda x: x.score,reverse=True)
-    winner_messege = f"{game_teams[0].teamName} type: {game_teams[0].score} time , congrats"
-    for Player in game_teams:
-        Player.connection.sendall(bytes(winner_messege,encoding='utf-8'))
+    global gameOn
+    result =  [["Group_1",0],["Group_2",0]]
+    team_to_add = 0
+    gameOn=False
+    for team in game_teams:
+        for player in team:
+            player.flag=False
+    time.sleep(1)
+    for team in game_teams:
+        for player in team:
+            result[team_to_add][1] += player.score
+        team=1
+    result = sorted(result,key=lambda x: x[1],reverse=True)
+    winner_messege = f"{result[0][0]} Won you'r score is: {result[0][1]} , congrats"
+    print(winner_messege)
+    for team in game_teams:
+        for player in team:
+            player.connection.sendall(bytes(winner_messege,encoding='utf-8'))
     
 
 
 
 
-def waiting_room(current_player):
+def waiting_room(current_player:Player,msg):
     global gameOn
     print (f"---waiting room--- \n welcome: {current_player.teamName}")
     connection = current_player.connection 
     connection.sendall(bytes("hi Amit",encoding="utf-8"))
-    while True:
+    while gameOn and current_player.flag:
         print (connection)
         data = connection.recv(8)
         print (data.decode('utf-8'))
+        current_player.score += 1
 
         
 
@@ -66,6 +81,7 @@ def tcp_connection():
     
     while not gameOn:
         try:
+            print ("Before TCP")
             conn, addr = tcp_server.accept()
             new_player = Player(conn,addr)
             game_teams[group_to_enter].append(new_player)
@@ -73,6 +89,7 @@ def tcp_connection():
             data = conn.recv(1024)
             tName = data.decode('utf-8')
             new_player.teamName=tName
+            print (f"Crete Player {new_player.teamName} ")
         except:
             pass
             gameOn = True
@@ -92,16 +109,14 @@ def tcp_connection():
         # gameOn = False
         # game_teams[0].connection.close()
         # flag=False
+    msg = f""
     for team in game_teams:
         for player in team:
             t = threading.Thread(target=waiting_room,args=[player])
             player.thread=t
             t.start()
-    time.sleep(5)
-    for team in game_teams:
-        for player in team:
-            player.flag = False
-            player.connection.close()
+    time.sleep(6)
+    endGame(game_teams)
         
 
             

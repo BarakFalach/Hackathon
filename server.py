@@ -12,4 +12,4 @@ message = b"your very important message"
 while True:
     server.sendto(message, ('<broadcast>', 37020))
     print("message sent!")
-    time.sleep(1)
+    time.sleep(10)

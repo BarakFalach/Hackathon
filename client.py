@@ -4,19 +4,40 @@ import struct
 import sys
 import msvcrt
 import time
+import select
 
 
-def start_clicking(s):
+def start_clicking(server):
     # readable, writable, exceptional = select.select(inputs, outputs, inputs)
     print("start clicking!!!")
     dead_line = time.time() + 10
-    while time.time() < dead_line:
-         if msvcrt.kbhit():
-            pressedKey = msvcrt.getch()
-            s.sendall(pressedKey)
-    print('stop clicking!')
-    the_winner_is = s.recv(1024).decode()
-    print(the_winner_is)    
+    # while time.time() < dead_line:
+    #     if msvcrt.kbhit():
+    #         pressedKey = msvcrt.getch()
+    #         s.sendall(pressedKey)
+    # print('stop clicking!')
+    # the_winner_is = s.recv(1024).decode()
+    # print(the_winner_is)
+    inputs = [server]
+    outputs = []
+    flag=True
+    try:
+        while flag:
+            readable, writable, exceptional = select.select(inputs, outputs, inputs,0.01)
+            for s in readable:
+                if s is server: 
+                    the_winner_is = s.recv(1024).decode()
+                    print(the_winner_is)
+                    flag = False
+                    break
+            if msvcrt.kbhit():
+                pressedKey = msvcrt.getch()
+                server.sendall(pressedKey)
+    except:
+        print ("cient Except")
+        pass
+
+
 
 def establish_TCP(host_ip, port_to_connect,client_name):
 

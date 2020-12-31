@@ -72,7 +72,7 @@ def tcp_connection():
     team_2 = []
     game_teams.append(team_1)
     game_teams.append(team_2)
-    HOST = '192.168.0.68'  # Standard loopback interface address (localhost)
+    HOST = '192.168.0.89'  # Standard loopback interface address (localhost)
     PORT = 5000        # Port to listen on (non-privileged ports are > 1023)
     tcp_server =  socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tcp_server.bind((HOST, PORT))
